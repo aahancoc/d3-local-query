@@ -16,7 +16,7 @@ describe('tokenize', function() {
 			],
 		]);
 		for (let [query, expected] of tests) {
-			expect(d3_lq.tokenize(query)).to.deep.equal(expected);
+			expect(d3_lq.tokenize(query), query).to.deep.equal(expected);
 		}
 	});
 
@@ -31,7 +31,7 @@ describe('tokenize', function() {
 			],
 		]);
 		for (let [query, expected] of tests) {
-			expect(d3_lq.tokenize(query)).to.deep.equal(expected);
+			expect(d3_lq.tokenize(query), query).to.deep.equal(expected);
 		}
 	});
 });
@@ -46,7 +46,7 @@ describe('filter_cols', function() {
 			]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cols(input.cols, input.data))
+			expect(d3_lq.filter_cols(input.cols, input.data), input.cols)
 			.to.deep.equal(expected);
 		}
 	});
@@ -63,7 +63,7 @@ describe('filter_cols', function() {
 			]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cols(input.cols, input.data))
+			expect(d3_lq.filter_cols(input.cols, input.data), input.cols)
 			.to.deep.equal(expected);
 		}
 	});
@@ -73,30 +73,62 @@ describe('filter_cond', function() {
 	it('Pass through data unchanged on `1 = 1`', function() {
 		const df = [{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}];
 		const tests = new Map([
-			[
-				{ cond: '1 = 1', data: df },
-				[{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}]
-			]
+			[ { cond: '1 = 1', data: df }, df ]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data))
+			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
 
-	it('Selects rows using `=` statements', function() {
+	it('Selects rows using `=` operator', function() {
 		const df = [{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}];
 		const tests = new Map([
-			[
-				{ cond: 'a = 1', data: df },
-				[{'a': 1, 'b': 2, 'c': 3}]
-			], [
-				{ cond: 'c = 0', data: df },
-				[{'a': 2, 'b': 1, 'c': 0}]
-			],
+			[ { cond: 'a = 1', data: df },   [df[0]] ],
+			[ { cond: 'c = 0', data: df },   [df[1]] ],
+			[ { cond: 'c = 100', data: df }, []      ],
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data))
+			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			.to.deep.equal(expected);
+		}
+	});
+
+	it('Selects rows using `=` and `AND` operators', function() {
+		const df = [{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}];
+		const tests = new Map([
+			[ { cond: 'a = 2 AND b = 1', data: df },           [df[1]] ],
+			[ { cond: 'a = 1 AND b = 2 AND c = 3', data: df }, [df[0]] ],
+			[ { cond: 'c = 0 AND c = 1', data: df },           []      ],
+		]);
+		for (let [input, expected] of tests) {
+			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			.to.deep.equal(expected);
+		}
+	});
+
+	it('Selects rows using `=` and `OR` operators', function() {
+		const df = [{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}];
+		const tests = new Map([
+			[ { cond: 'a = 2 OR b = 1', data: df },          [df[1]] ],
+			[ { cond: 'a = 1 OR b = 1 OR c = 1', data: df }, df      ],
+			[ { cond: 'c = 1 OR c = 2', data: df },          []      ],
+		]);
+		for (let [input, expected] of tests) {
+			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			.to.deep.equal(expected);
+		}
+	});
+
+	it('Selects rows using `=`, `AND, and `OR` operators', function() {
+		const df = [{'a': 1, 'b': 2, 'c': 3}, {'a': 2, 'b': 1, 'c': 0}];
+		const tests = new Map([
+			[ { cond: 'a = 1 AND b = 1 OR c = 0', data: df }, [df[1]] ],
+			[ { cond: 'a = 1 OR b = 1 AND c = 0', data: df }, df      ],
+			[ { cond: 'c = 1 OR c = 2', data: df },           []      ],
+		]);
+		for (let [input, expected] of tests) {
+			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});

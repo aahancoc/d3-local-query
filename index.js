@@ -52,12 +52,12 @@ export function filter_cols(cols, data)
 
 export function filter_cond(cond, data)
 {
-	// AND has greater precendence than OR
 	let i = 0;
+	// AND has greater precendence than OR
 	const FILTER_OPERATORS = {
-		'AND': new Operator('AND', 2, 'left', 2, (a, b) => a && b),
-		'OR':  new Operator('OR', 1, 'left', 2, (a, b) => a || b),
-		'=':   new Operator('=', 0, 'left', 2, (a, b) => {
+		'AND': new Operator('AND', 1, 'left', 2, (a, b) => a && b),
+		'OR':  new Operator('OR', 0, 'left', 2, (a, b) => a || b),
+		'=':   new Operator('=', 2, 'left', 2, (a, b) => {
 			if (Object.keys(data[i]).includes(a)) { return data[i][a] == b; }
 			else { return a === b; }
 		})
@@ -66,11 +66,12 @@ export function filter_cond(cond, data)
 		operators: FILTER_OPERATORS,
 		parse_raw: true
 	});
+	const cond_rpn = sy.parse(cond);
 
 	return data.filter(
 		(d, i_local) => {
 			i = i_local;
-			return !!sy.resolve(cond, {raw: true});
+			return !!sy.resolveRpn(cond_rpn, {raw: true});
 		}
 	);
 }
