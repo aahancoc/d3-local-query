@@ -10,7 +10,24 @@ export function tokenize(query)
 	let idx_where = query.search("WHERE ");
 	let idx_where_end = idx_where + "WHERE ".length;
 
-	if (idx_from === -1) {
+	if (idx_select === -1) {
+		throw new SyntaxError(`Missing SELECT statement in query ${query}`);
+	}
+
+	if (idx_where === -1 && idx_from === -1) {
+		return {
+			cols: query.slice(idx_select_end).split(',').map(x => x.trim()),
+			srcs: [],
+			cond: "1 = 1"
+		}
+	}
+	if (idx_where === -1) {
+		return {
+			cols: query.slice(idx_select_end, idx_from).split(',').map(x => x.trim()),
+			srcs: query.slice(idx_from_end).split(',').map(x => x.trim()),
+			cond: "1 = 1"
+		}
+	} else if (idx_from === -1) {
 		return {
 			cols: query.slice(idx_select_end, idx_where).split(',').map(x => x.trim()),
 			srcs: [],
