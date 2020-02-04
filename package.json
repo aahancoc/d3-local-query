@@ -1,6 +1,6 @@
 {
 	"name": "d3-local-query",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Run SQL-like SELECT statements on data from d3.dsv",
 	"main": "index.js",
 	"scripts": {
@@ -34,6 +34,5 @@
 		"uglify-js": "^3.7.7"
 	},
 	"dependencies": {
-		"remove": "^0.1.5"
 	}
 }
