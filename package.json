@@ -6,8 +6,12 @@
 	"scripts": {
 		"pretest": "rm -rf build && mkdir build && rollup -f umd -n d3.local_query index.js | babel -f index.js -o build/d3-local-query.js",
 		"test": "mocha --require esm",
-		"prepublish": "npm run test && uglifyjs build/d3-local-query.js -c -m -o build/d3-local-query.min.js",
-		"postpublish": "zip -j build/d3-local-query.zip -- LICENSE README.md build/d3-local-query.js build/d3-local-query.min.js"
+		"prepare": "npm run test && uglifyjs build/d3-local-query.js -c -m -o build/d3-local-query.min.js"
+	},
+	"homepage": "https://github.com/aahancoc/d3-local-query",
+	"repository": {
+	  "type": "git",
+	  "url": "https://github.com/aahancoc/d3-local-query.git"
 	},
 	"keywords": [
 		"d3",

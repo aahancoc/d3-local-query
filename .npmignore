@@ -1,2 +1,7 @@
-build/*.zip
+build/*
 test/
+**/.*
+babel.config.json
+**/Rakefile
+**/yarn.lock
+**/webpack.config.js
