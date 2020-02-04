@@ -1,24 +1,36 @@
 {
-  "name": "d3-local-query",
-  "version": "1.0.0",
-  "description": "Plugin to run SQL-like SELECT statements on D3.js-formatted data",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha --require esm"
-  },
-  "keywords": [
-    "d3",
-    "d3-module",
-    "d3-plugin"
-  ],
-  "author": "Allison Hancock <aahancoc@umich.edu>",
-  "license": "ISC",
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "d3-dsv": "^1.2.0",
-    "eslint": "^6.8.0",
-    "esm": "^3.2.25",
-    "mocha": "^7.0.1"
-  },
-  "dependencies": {}
+	"name": "d3-local-query",
+	"version": "1.0.0",
+	"description": "Run SQL-like SELECT statements on data from d3.dsv",
+	"main": "index.js",
+	"scripts": {
+		"pretest": "rm -rf build && mkdir build && rollup -f umd -n d3 index.js | babel -f index.js -o build/d3-local-query.js",
+		"test": "mocha --require esm",
+		"prepublish": "npm run test && uglifyjs build/d3-local-query.js -c -m -o build/d3-local-query.min.js",
+		"postpublish": "zip -j build/d3-local-query.zip -- LICENSE README.md build/d3-local-query.js build/d3-local-query.min.js"
+	},
+	"keywords": [
+		"d3",
+		"d3-module",
+		"data",
+		"filtering"
+	],
+	"author": "Allison Hancock <aahancoc@umich.edu>",
+	"license": "BSD-3-Clause",
+	"devDependencies": {
+		"@babel/cli": "^7.8.4",
+		"@babel/core": "^7.8.4",
+		"@babel/preset-env": "^7.8.4",
+		"babel": "^6.23.0",
+		"chai": "^4.2.0",
+		"d3-dsv": "^1.2.0",
+		"eslint": "^6.8.0",
+		"esm": "^3.2.25",
+		"mocha": "^7.0.1",
+		"rollup": "^1.31.0",
+		"uglify-js": "^3.7.7"
+	},
+	"dependencies": {
+		"remove": "^0.1.5"
+	}
 }

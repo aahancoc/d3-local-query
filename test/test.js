@@ -1,7 +1,8 @@
 import {csvParse} from "d3-dsv";
 import {expect} from "chai"
 import fs from "fs";
-import query, * as d3_lq from "../index.js";
+import {default as local_query} from "../index.js"
+import {tokenize, filter_cols, filter_cond} from "../src/main.js";
 
 
 describe('tokenize', function() {
@@ -16,7 +17,7 @@ describe('tokenize', function() {
 			],
 		]);
 		for (let [query, expected] of tests) {
-			expect(d3_lq.tokenize(query), query).to.deep.equal(expected);
+			expect(tokenize(query), query).to.deep.equal(expected);
 		}
 	});
 
@@ -31,7 +32,7 @@ describe('tokenize', function() {
 			],
 		]);
 		for (let [query, expected] of tests) {
-			expect(d3_lq.tokenize(query), query).to.deep.equal(expected);
+			expect(tokenize(query), query).to.deep.equal(expected);
 		}
 	});
 });
@@ -46,7 +47,7 @@ describe('filter_cols', function() {
 			]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cols(input.cols, input.data), input.cols)
+			expect(filter_cols(input.cols, input.data), input.cols)
 			.to.deep.equal(expected);
 		}
 	});
@@ -63,7 +64,7 @@ describe('filter_cols', function() {
 			]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cols(input.cols, input.data), input.cols)
+			expect(filter_cols(input.cols, input.data), input.cols)
 			.to.deep.equal(expected);
 		}
 	});
@@ -76,7 +77,7 @@ describe('filter_cond', function() {
 			[ { cond: '1 = 1', data: df }, df ]
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			expect(filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
@@ -89,7 +90,7 @@ describe('filter_cond', function() {
 			[ { cond: 'c = 100', data: df }, []      ],
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			expect(filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
@@ -102,7 +103,7 @@ describe('filter_cond', function() {
 			[ { cond: 'c = 0 AND c = 1', data: df },           []      ],
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			expect(filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
@@ -115,7 +116,7 @@ describe('filter_cond', function() {
 			[ { cond: 'c = 1 OR c = 2', data: df },          []      ],
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			expect(filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
@@ -128,7 +129,7 @@ describe('filter_cond', function() {
 			[ { cond: 'c = 1 OR c = 2', data: df },           []      ],
 		]);
 		for (let [input, expected] of tests) {
-			expect(d3_lq.filter_cond(input.cond, input.data), input.cond)
+			expect(filter_cond(input.cond, input.data), input.cond)
 			.to.deep.equal(expected);
 		}
 	});
@@ -137,6 +138,6 @@ describe('filter_cond', function() {
 describe('query', function() {
 	it("Passes through data unaltered if requested", function() {
 		const df = csvParse(fs.readFileSync('./test/test.csv', 'UTF-8'));
-		expect(query("SELECT * WHERE 1 = 1", df)).to.deep.equal(df);
+		expect(local_query("SELECT * WHERE 1 = 1", df)).to.deep.equal(df);
 	});
 });
