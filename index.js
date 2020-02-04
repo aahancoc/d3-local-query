@@ -1,12 +1,12 @@
 import ShuntingYard, {Operator} from "shunting-yard.js";
 
 // Currently very dumb, only supports a single data source
-export function query(query, data)
+export default function query(query, data)
 {
-	const tokens = query(tokens);
+	const tokens = tokenize(tokens);
 
-	data = filter_cols(data);
-	data = filter_cond(data);
+	data = filter_cols(tokens['cols'], data);
+	data = filter_cond(tokens['cond'], data);
 	return data;
 }
 
@@ -34,6 +34,10 @@ function tokenize(query)
 
 function filter_cols(cols, data)
 {
+	if (cols === ['*']) {
+		return data;
+	}
+
 	let output = []
 	data.forEach(d => {
 		let x = {};
