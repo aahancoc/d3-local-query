@@ -1,4 +1,4 @@
-import ShuntingYard, {Operator} from "shunting-yard.js";
+import ShuntingYard, {Operator} from "./shunting-yard.js/src/index.js";
 
 // Currently very dumb, only supports a single data source
 export default function query(query, data)
@@ -53,18 +53,24 @@ export function filter_cols(cols, data)
 export function filter_cond(cond, data)
 {
 	// AND has greater precendence than OR
-	const sy = new ShuntingYard();
 	let i = 0;
-	sy.addOperator('AND', new Operator('AND', 2, 'left', 2, (a, b) => a && b));
-	sy.addOperator('OR', new Operator('OR', 1, 'left', 2, (a, b) => a || b));
-
-	// Operators
-	sy.addOperator(
-		'=', new Operator('=', 0, 'left', 2, (a, b) => {
-			if (Object.keys(data[i]).includes(a)) { return data[i][a] === b; }
+	const FILTER_OPERATORS = {
+		'AND': new Operator('AND', 2, 'left', 2, (a, b) => a && b),
+		'OR':  new Operator('OR', 1, 'left', 2, (a, b) => a || b),
+		'=':   new Operator('=', 0, 'left', 2, (a, b) => {
+			if (Object.keys(data[i]).includes(a)) { return data[i][a] == b; }
 			else { return a === b; }
 		})
-	);
+	};
+	const sy = new ShuntingYard({
+		operators: FILTER_OPERATORS,
+		parse_raw: true
+	});
 
-	return data.filter( (d, i_local) => {i = i_local; return !!sy.resolve(cond);});
+	return data.filter(
+		(d, i_local) => {
+			i = i_local;
+			return !!sy.resolve(cond, {raw: true});
+		}
+	);
 }

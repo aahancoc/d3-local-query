@@ -20,7 +20,5 @@
     "esm": "^3.2.25",
     "mocha": "^7.0.1"
   },
-  "dependencies": {
-    "shunting-yard.js": "^2.0.0"
-  }
+  "dependencies": {}
 }
